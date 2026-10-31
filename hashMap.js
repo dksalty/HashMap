@@ -1,5 +1,5 @@
-function HashMap(){
-const capacity = 16;
+export function HashMap(){
+let capacity = 16;
 const loadFactor = 0.75;
 const buckets = [];
 buckets.length = capacity;
@@ -13,7 +13,7 @@ const hash = (key) => {
 }   
 
 const set = (key, value) => {
-const bucketIndex = hash(key);
+let bucketIndex = hash(key)  
 const entry = {key: key, value: value}
 if(buckets[bucketIndex] === undefined){
 buckets[bucketIndex] = []
@@ -24,11 +24,27 @@ for(const bucketKey of buckets[bucketIndex]){
   return
   }
 }
+const savedEntries = entries()
+if(length() + 1 > capacity * loadFactor){
+ capacity = capacity * 2 
+ buckets.length = capacity
+ clear()
+ for(const entry of savedEntries){
+set(entry[0],entry[1])
+}
+ bucketIndex = hash(key) 
+if(buckets[bucketIndex] === undefined){
+buckets[bucketIndex] = []
+}
+ }
 buckets[bucketIndex].push(entry)
 }
 
 const get = (key) => {
 const bucketIndex = hash(key);
+if (buckets[bucketIndex] === undefined) {
+    return undefined
+}
 for(const bucketKey of buckets[bucketIndex]){
   if(key === bucketKey.key){
   return bucketKey.value
@@ -87,19 +103,36 @@ const keys = () => {
 const keyArray = []
 for(const bucket of buckets){
   if(bucket){
-  for(const object of bucket)
+  for(const object of bucket){
   keyArray.push(object.key)
+}
 }
 }
 return keyArray
 }
 
 const values = () => {
-
+const valueArray = []
+for(const bucket of buckets){
+  if(bucket){
+  for(const object of bucket){
+  valueArray.push(object.value)
+}
+}
+}
+return valueArray
 }
 
 const entries = () => {
-
+const entriesArray = []
+for(const bucket of buckets){
+  if(bucket){
+  for(const object of bucket){
+  entriesArray.push([object.key, object.value])
+}
+}
+}
+return entriesArray
 }
 
 return {
